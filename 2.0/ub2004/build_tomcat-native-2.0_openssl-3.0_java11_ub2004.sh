@@ -236,7 +236,7 @@ sleep 2
 cp -afr usr/lib/x86_64-linux-gnu /tmp/tomcat-native
 sleep 2
 cd /tmp
-tar -Jcvf /tmp/"libtcnative-${_tcn20_ver}_openssl-${_openssl30_ver}-1.ub2004.x86_64.tar.xz" tomcat-native
+tar -Jcvf /tmp/"libtcnative-${_tcn20_ver}_openssl-${_openssl30_ver}_java11-1.ub2004.x86_64.tar.xz" tomcat-native
 echo
 sleep 2
 cd /tmp

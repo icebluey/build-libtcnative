@@ -1,6 +1,6 @@
 # server.xml
 ```
-# tomcat 8.5, 9.0 , 10.0
+# tomcat 8.5, 9.0, 10.0
 
     <Connector port="80" protocol="org.apache.coyote.http11.Http11AprProtocol"
                connectionTimeout="20000"

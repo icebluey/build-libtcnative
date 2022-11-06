@@ -55,5 +55,22 @@ CLASSPATH=.:$JAVA_HOME/jre/lib/rt.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools
 export CLASSPATH
 ```
 
+# redirect 301
+Insert a line below ```<Engine name="Catalina" defaultHost="localhost">``` in server.xml
+```
+<Realm className="org.apache.catalina.realm.LockOutRealm" transportGuaranteeRedirectStatus="301">
+```
+Add to web.xml above ```</web-app>```
+```
+    <security-constraint>
+        <web-resource-collection >
+            <web-resource-name >SSL</web-resource-name>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <user-data-constraint>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
 
-
+</web-app>
+```

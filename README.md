@@ -63,8 +63,8 @@ Insert a line below ```<Engine name="Catalina" defaultHost="localhost">``` in se
 Add to web.xml above ```</web-app>```
 ```
     <security-constraint>
-        <web-resource-collection >
-            <web-resource-name >SSL</web-resource-name>
+        <web-resource-collection>
+            <web-resource-name>SSL</web-resource-name>
             <url-pattern>/*</url-pattern>
         </web-resource-collection>
         <user-data-constraint>

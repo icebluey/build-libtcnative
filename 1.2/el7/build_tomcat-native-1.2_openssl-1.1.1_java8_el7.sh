@@ -95,6 +95,9 @@ _build_zlib() {
     fi
     echo
     sleep 2
+    /bin/rm -f /usr/lib64/libz.so*
+    /bin/rm -f /usr/lib64/libz.a
+    sleep 1
     /bin/cp -afr * /
     cd /tmp
     rm -fr "${_tmp_dir}"

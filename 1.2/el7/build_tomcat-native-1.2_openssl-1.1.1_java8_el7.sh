@@ -56,6 +56,51 @@ _install_java8() {
     rm -fr "${_tmp_dir}"
 }
 
+_build_zlib() {
+    set -e
+    _tmp_dir="$(mktemp -d)"
+    cd "${_tmp_dir}"
+    _zlib_ver="$(wget -qO- 'https://www.zlib.net/' | grep 'zlib-[1-9].*\.tar\.' | sed -e 's|"|\n|g' | grep '^zlib-[1-9]' | sed -e 's|\.tar.*||g' -e 's|zlib-||g' | sort -V | uniq | tail -n 1)"
+    wget -c -t 9 -T 9 "https://www.zlib.net/zlib-${_zlib_ver}.tar.gz"
+    tar -xof zlib-${_zlib_ver}.tar.*
+    sleep 1
+    rm -f zlib-*.tar*
+    cd zlib-*
+    ./configure --prefix=/usr --libdir=/usr/lib64 --includedir=/usr/include --sysconfdir=/etc --64
+    make all
+    rm -fr /tmp/zlib
+    make DESTDIR=/tmp/zlib install
+    cd /tmp/zlib
+    find usr/ -type f -iname '*.la' -delete
+    if [[ -d usr/sbin ]]; then
+        file usr/sbin/* | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs -I '{}' /usr/bin/strip '{}'
+    fi
+    if [[ -d usr/bin ]]; then
+        file usr/bin/* | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs -I '{}' /usr/bin/strip '{}'
+    fi
+    if [[ -d usr/lib/x86_64-linux-gnu ]]; then
+        find usr/lib/x86_64-linux-gnu/ -iname 'lib*.so*' -type f -exec /usr/bin/strip "{}" \;
+        find usr/lib/x86_64-linux-gnu/ -iname '*.so' -type f -exec /usr/bin/strip "{}" \;
+    elif [[ -d usr/lib64/ ]]; then
+        find usr/lib64/ -iname 'lib*.so*' -type f -exec /usr/bin/strip "{}" \;
+        find usr/lib64/ -iname '*.so' -type f -exec /usr/bin/strip "{}" \;
+    fi
+    if [[ -d usr/share/man ]]; then
+        find -L usr/share/man/ -type l -exec rm -f '{}' \;
+        find usr/share/man/ -type f -iname '*.[1-9]' -exec gzip -f -9 '{}' \;
+        sleep 2
+        find -L usr/share/man/ -type l | while read file; do ln -svf "$(readlink -s "${file}").gz" "${file}.gz" ; done
+        sleep 2
+        find -L usr/share/man/ -type l -exec rm -f '{}' \;
+    fi
+    echo
+    sleep 2
+    /bin/cp -afr * /
+    cd /tmp
+    rm -fr "${_tmp_dir}"
+    /sbin/ldconfig
+}
+
 _build_apr() {
     set -e
     _tmp_dir="$(mktemp -d)"
@@ -168,6 +213,7 @@ _build_openssl111() {
     /sbin/ldconfig
 }
 
+_build_zlib
 _build_apr
 _build_openssl111
 _install_java8
@@ -228,6 +274,7 @@ if [[ -d usr/share/man ]]; then
     sleep 2
     find -L usr/share/man/ -type l -exec rm -f '{}' \;
 fi
+cp -a /tmp/zlib/usr/lib64/lib*.so* usr/lib64/
 cp -a /tmp/apr/usr/lib64/lib*.so* usr/lib64/
 cp -a /tmp/openssl111/usr/lib64/lib*.so* usr/lib64/
 rm -f usr/lib64/*.a
@@ -242,7 +289,7 @@ echo
 sleep 2
 cd /tmp
 rm -fr "${_tmp_dir}"
-rm -fr /tmp/apr /tmp/openssl111 /tmp/tcn12 /tmp/tomcat-native
+rm -fr /tmp/zlib /tmp/apr /tmp/openssl111 /tmp/tcn12 /tmp/tomcat-native
 echo
 echo ' done'
 echo

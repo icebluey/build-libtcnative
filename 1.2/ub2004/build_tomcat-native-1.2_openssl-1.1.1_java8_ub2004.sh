@@ -184,6 +184,9 @@ _build_openssl111() {
     rm -fr /tmp/openssl111
     make DESTDIR=/tmp/openssl111 install_sw
     cd /tmp/openssl111
+    mkdir -p usr/include/x86_64-linux-gnu/openssl
+    chmod 0755 usr/include/x86_64-linux-gnu/openssl
+    install -c -m 0644 usr/include/openssl/opensslconf.h usr/include/x86_64-linux-gnu/openssl/
     find usr/ -type f -iname '*.la' -delete
     if [[ -d usr/sbin ]]; then
         file usr/sbin/* | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs -I '{}' /usr/bin/strip '{}'

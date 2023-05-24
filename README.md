@@ -1,4 +1,9 @@
 # server.xml
+
+```
+  <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
+```
+
 ```
 # tomcat v8.5, v9.0, v10.0
 
@@ -14,10 +19,8 @@
             certificateFile="keys/domain.crt"
             certificateChainFile="keys/fullchain.crt"
                          type="RSA" />
-
         </SSLHostConfig>
     </Connector>
-
 
 # tomcat v10.1
 
@@ -33,7 +36,6 @@
             certificateFile="keys/domain.crt"
             certificateChainFile="keys/fullchain.crt"
                          type="RSA" />
-
         </SSLHostConfig>
     </Connector>
 

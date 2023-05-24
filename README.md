@@ -1,3 +1,7 @@
+
+Tomcat Native 2 for Tomcat 10.1.x \
+Tomcat Native 1.2 for Tomcat 8 and 9
+
 # server.xml
 
 ```
@@ -5,7 +9,7 @@
 ```
 
 ```
-# tomcat v8.5, v9.0, v10.0
+# tomcat v8.5, v9.0
 
     <Connector port="80" protocol="org.apache.coyote.http11.Http11AprProtocol"
                connectionTimeout="20000"

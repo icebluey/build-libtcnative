@@ -40,6 +40,7 @@
 ```
 
 # setenv.sh
+under tomcat/bin/
 ```
 LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH:$CATALINA_HOME/lib
 export LD_LIBRARY_PATH

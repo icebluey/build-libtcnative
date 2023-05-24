@@ -374,6 +374,7 @@ tar -Jcvf /tmp/"tomcat-native-${_tcn12_ver}_openssl-${_openssl111_ver}_java8-1.e
 echo
 sleep 2
 cd /tmp
+openssl dgst -r -sha256 tomcat-native-${_tcn12_ver}_openssl-${_openssl111_ver}_java8-1.el7.x86_64.tar.xz | sed 's|\*| |g' > tomcat-native-${_tcn12_ver}_openssl-${_openssl111_ver}_java8-1.el7.x86_64.tar.xz.sha256
 rm -fr "${_tmp_dir}"
 rm -fr /tmp/tcn12 /tmp/tomcat-native
 echo

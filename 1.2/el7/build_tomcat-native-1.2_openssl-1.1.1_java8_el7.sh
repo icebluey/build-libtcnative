@@ -57,12 +57,13 @@ _install_java8() {
 }
 
 _build_zlib() {
+    /sbin/ldconfig
     set -e
     _tmp_dir="$(mktemp -d)"
     cd "${_tmp_dir}"
     _zlib_ver="$(wget -qO- 'https://www.zlib.net/' | grep 'zlib-[1-9].*\.tar\.' | sed -e 's|"|\n|g' | grep '^zlib-[1-9]' | sed -e 's|\.tar.*||g' -e 's|zlib-||g' | sort -V | uniq | tail -n 1)"
     wget -c -t 9 -T 9 "https://www.zlib.net/zlib-${_zlib_ver}.tar.gz"
-    tar -xof zlib-${_zlib_ver}.tar.*
+    tar -xof zlib-*.tar.*
     sleep 1
     rm -f zlib-*.tar*
     cd zlib-*
@@ -71,36 +72,54 @@ _build_zlib() {
     rm -fr /tmp/zlib
     make DESTDIR=/tmp/zlib install
     cd /tmp/zlib
+    if [[ "$(pwd)" = '/' ]]; then
+        echo
+        printf '\e[01;31m%s\e[m\n' "Current dir is '/'"
+        printf '\e[01;31m%s\e[m\n' "quit"
+        echo
+        exit 1
+    else
+        rm -fr lib64
+        rm -fr lib
+        chown -R root:root ./
+    fi
     find usr/ -type f -iname '*.la' -delete
-    if [[ -d usr/sbin ]]; then
-        file usr/sbin/* | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs -I '{}' /usr/bin/strip '{}'
-    fi
-    if [[ -d usr/bin ]]; then
-        file usr/bin/* | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs -I '{}' /usr/bin/strip '{}'
-    fi
-    if [[ -d usr/lib/x86_64-linux-gnu ]]; then
-        find usr/lib/x86_64-linux-gnu/ -iname 'lib*.so*' -type f -exec /usr/bin/strip "{}" \;
-        find usr/lib/x86_64-linux-gnu/ -iname '*.so' -type f -exec /usr/bin/strip "{}" \;
-    elif [[ -d usr/lib64/ ]]; then
-        find usr/lib64/ -iname 'lib*.so*' -type f -exec /usr/bin/strip "{}" \;
-        find usr/lib64/ -iname '*.so' -type f -exec /usr/bin/strip "{}" \;
-    fi
     if [[ -d usr/share/man ]]; then
         find -L usr/share/man/ -type l -exec rm -f '{}' \;
+        sleep 2
         find usr/share/man/ -type f -iname '*.[1-9]' -exec gzip -f -9 '{}' \;
         sleep 2
         find -L usr/share/man/ -type l | while read file; do ln -svf "$(readlink -s "${file}").gz" "${file}.gz" ; done
         sleep 2
         find -L usr/share/man/ -type l -exec rm -f '{}' \;
     fi
+    if [[ -d usr/lib/x86_64-linux-gnu ]]; then
+        find usr/lib/x86_64-linux-gnu/ -type f \( -iname '*.so' -or -iname '*.so.*' \) | xargs --no-run-if-empty -I '{}' chmod 0755 '{}'
+        find usr/lib/x86_64-linux-gnu/ -iname 'lib*.so*' -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+        find usr/lib/x86_64-linux-gnu/ -iname '*.so' -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+    fi
+    if [[ -d usr/lib64 ]]; then
+        find usr/lib64/ -type f \( -iname '*.so' -or -iname '*.so.*' \) | xargs --no-run-if-empty -I '{}' chmod 0755 '{}'
+        find usr/lib64/ -iname 'lib*.so*' -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+        find usr/lib64/ -iname '*.so' -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+    fi
+    if [[ -d usr/sbin ]]; then
+        find usr/sbin/ -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+    fi
+    if [[ -d usr/bin ]]; then
+        find usr/bin/ -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+    fi
     echo
-    sleep 2
+    install -m 0755 -d usr/lib64/tomcat-native/private
+    cp -af usr/lib64/*.so* usr/lib64/tomcat-native/private/
     /bin/rm -f /usr/lib64/libz.so*
     /bin/rm -f /usr/lib64/libz.a
-    sleep 1
+    sleep 2
     /bin/cp -afr * /
+    sleep 2
     cd /tmp
     rm -fr "${_tmp_dir}"
+    rm -fr /tmp/zlib
     /sbin/ldconfig
 }
 
@@ -110,10 +129,11 @@ _build_apr() {
     cd "${_tmp_dir}"
     _apr_ver="$(wget -qO- 'https://apr.apache.org/download.cgi' | grep -i 'href="https://dlcdn.apache.org//apr/apr-[1-9].*\.tar\.bz2' | sed 's|"|\n|g' | grep -i 'http' | sed -e 's|.*apr-||g' -e 's|\.tar.*||g' | grep -ivE 'alpha|beta|rc' | sort -V | uniq | tail -n 1)"
     wget -c -t 9 -T 9 "https://dlcdn.apache.org/apr/apr-${_apr_ver}.tar.bz2"
-    tar -xof "apr-${_apr_ver}.tar.bz2"
+    tar -xof apr-*.tar*
     sleep 1
-    rm -f "apr-${_apr_ver}.tar.bz2"
-    cd "apr-${_apr_ver}"
+    rm -f apr-*.tar*
+    cd apr-*
+    LDFLAGS='' ; LDFLAGS="${_ORIG_LDFLAGS}"' -Wl,-rpath,\$$ORIGIN' ; export LDFLAGS
     ./configure \
     --build=x86_64-linux-gnu \
     --host=x86_64-linux-gnu \
@@ -125,48 +145,70 @@ _build_apr() {
     rm -fr /tmp/apr
     make DESTDIR=/tmp/apr install
     cd /tmp/apr
+    if [[ "$(pwd)" = '/' ]]; then
+        echo
+        printf '\e[01;31m%s\e[m\n' "Current dir is '/'"
+        printf '\e[01;31m%s\e[m\n' "quit"
+        echo
+        exit 1
+    else
+        rm -fr lib64
+        rm -fr lib
+        chown -R root:root ./
+    fi
     find usr/ -type f -iname '*.la' -delete
-    if [[ -d usr/sbin ]]; then
-        file usr/sbin/* | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs -I '{}' /usr/bin/strip '{}'
-    fi
-    if [[ -d usr/bin ]]; then
-        file usr/bin/* | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs -I '{}' /usr/bin/strip '{}'
-    fi
-    if [[ -d usr/lib/x86_64-linux-gnu ]]; then
-        find usr/lib/x86_64-linux-gnu/ -iname 'lib*.so*' -type f -exec /usr/bin/strip "{}" \;
-        find usr/lib/x86_64-linux-gnu/ -iname '*.so' -type f -exec /usr/bin/strip "{}" \;
-    elif [[ -d usr/lib64/ ]]; then
-        find usr/lib64/ -iname 'lib*.so*' -type f -exec /usr/bin/strip "{}" \;
-        find usr/lib64/ -iname '*.so' -type f -exec /usr/bin/strip "{}" \;
-    fi
     if [[ -d usr/share/man ]]; then
         find -L usr/share/man/ -type l -exec rm -f '{}' \;
+        sleep 2
         find usr/share/man/ -type f -iname '*.[1-9]' -exec gzip -f -9 '{}' \;
         sleep 2
         find -L usr/share/man/ -type l | while read file; do ln -svf "$(readlink -s "${file}").gz" "${file}.gz" ; done
         sleep 2
         find -L usr/share/man/ -type l -exec rm -f '{}' \;
     fi
+    if [[ -d usr/lib/x86_64-linux-gnu ]]; then
+        find usr/lib/x86_64-linux-gnu/ -type f \( -iname '*.so' -or -iname '*.so.*' \) | xargs --no-run-if-empty -I '{}' chmod 0755 '{}'
+        find usr/lib/x86_64-linux-gnu/ -iname 'lib*.so*' -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+        find usr/lib/x86_64-linux-gnu/ -iname '*.so' -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+    fi
+    if [[ -d usr/lib64 ]]; then
+        find usr/lib64/ -type f \( -iname '*.so' -or -iname '*.so.*' \) | xargs --no-run-if-empty -I '{}' chmod 0755 '{}'
+        find usr/lib64/ -iname 'lib*.so*' -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+        find usr/lib64/ -iname '*.so' -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+    fi
+    if [[ -d usr/sbin ]]; then
+        find usr/sbin/ -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+    fi
+    if [[ -d usr/bin ]]; then
+        find usr/bin/ -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+    fi
     echo
+    install -m 0755 -d usr/lib64/tomcat-native/private
+    cp -af usr/lib64/*.so* usr/lib64/tomcat-native/private/
     sleep 2
     /bin/cp -afr * /
+    sleep 2
     cd /tmp
     rm -fr "${_tmp_dir}"
+    rm -fr /tmp/apr
     /sbin/ldconfig
 }
 
 _build_openssl111() {
+    /sbin/ldconfig
     set -e
     _tmp_dir="$(mktemp -d)"
     cd "${_tmp_dir}"
     _openssl111_ver="$(wget -qO- 'https://www.openssl.org/source/' | grep 'href="openssl-1.1.1' | sed 's|"|\n|g' | grep -i '^openssl-1.1.1.*\.tar\.gz$' | cut -d- -f2 | sed 's|\.tar.*||g' | sort -V | uniq | tail -n 1)"
     wget -c -t 9 -T 9 "https://www.openssl.org/source/openssl-${_openssl111_ver}.tar.gz"
-    tar -xof "openssl-${_openssl111_ver}.tar.gz"
+    tar -xof openssl-*.tar*
     sleep 1
-    rm -f "openssl-${_openssl111_ver}.tar.gz"
-    cd "openssl-${_openssl111_ver}"
+    rm -f openssl-*.tar*
+    cd openssl-*
+    # Only for debian/ubuntu
+    #sed '/define X509_CERT_FILE .*OPENSSLDIR "/s|"/cert.pem"|"/certs/ca-certificates.crt"|g' -i include/internal/cryptlib.h
     sed '/install_docs:/s| install_html_docs||g' -i Configurations/unix-Makefile.tmpl
-    LDFLAGS='' ; LDFLAGS='-Wl,-z,relro -Wl,--as-needed -Wl,-z,now -Wl,-rpath,\$$ORIGIN' ; export LDFLAGS
+    LDFLAGS='' ; LDFLAGS="${_ORIG_LDFLAGS}"' -Wl,-rpath,\$$ORIGIN' ; export LDFLAGS
     HASHBANGPERL=/usr/bin/perl
     ./Configure \
     --prefix=/usr \
@@ -185,34 +227,61 @@ _build_openssl111() {
     rm -fr /tmp/openssl111
     make DESTDIR=/tmp/openssl111 install_sw
     cd /tmp/openssl111
+    # Only for debian/ubuntu
+    #mkdir -p usr/include/x86_64-linux-gnu/openssl
+    #chmod 0755 usr/include/x86_64-linux-gnu/openssl
+    #install -c -m 0644 usr/include/openssl/opensslconf.h usr/include/x86_64-linux-gnu/openssl/
+    sed 's|http://|https://|g' -i usr/lib64/pkgconfig/*.pc
+    if [[ "$(pwd)" = '/' ]]; then
+        echo
+        printf '\e[01;31m%s\e[m\n' "Current dir is '/'"
+        printf '\e[01;31m%s\e[m\n' "quit"
+        echo
+        exit 1
+    else
+        rm -fr lib64
+        rm -fr lib
+        chown -R root:root ./
+    fi
     find usr/ -type f -iname '*.la' -delete
-    if [[ -d usr/sbin ]]; then
-        file usr/sbin/* | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs -I '{}' /usr/bin/strip '{}'
-    fi
-    if [[ -d usr/bin ]]; then
-        file usr/bin/* | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs -I '{}' /usr/bin/strip '{}'
-    fi
-    if [[ -d usr/lib/x86_64-linux-gnu ]]; then
-        find usr/lib/x86_64-linux-gnu/ -iname 'lib*.so*' -type f -exec /usr/bin/strip "{}" \;
-        find usr/lib/x86_64-linux-gnu/ -iname '*.so' -type f -exec /usr/bin/strip "{}" \;
-    elif [[ -d usr/lib64/ ]]; then
-        find usr/lib64/ -iname 'lib*.so*' -type f -exec /usr/bin/strip "{}" \;
-        find usr/lib64/ -iname '*.so' -type f -exec /usr/bin/strip "{}" \;
-    fi
     if [[ -d usr/share/man ]]; then
         find -L usr/share/man/ -type l -exec rm -f '{}' \;
+        sleep 2
         find usr/share/man/ -type f -iname '*.[1-9]' -exec gzip -f -9 '{}' \;
         sleep 2
         find -L usr/share/man/ -type l | while read file; do ln -svf "$(readlink -s "${file}").gz" "${file}.gz" ; done
         sleep 2
         find -L usr/share/man/ -type l -exec rm -f '{}' \;
     fi
+    if [[ -d usr/lib/x86_64-linux-gnu ]]; then
+        find usr/lib/x86_64-linux-gnu/ -type f \( -iname '*.so' -or -iname '*.so.*' \) | xargs --no-run-if-empty -I '{}' chmod 0755 '{}'
+        find usr/lib/x86_64-linux-gnu/ -iname 'lib*.so*' -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+        find usr/lib/x86_64-linux-gnu/ -iname '*.so' -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+    fi
+    if [[ -d usr/lib64 ]]; then
+        find usr/lib64/ -type f \( -iname '*.so' -or -iname '*.so.*' \) | xargs --no-run-if-empty -I '{}' chmod 0755 '{}'
+        find usr/lib64/ -iname 'lib*.so*' -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+        find usr/lib64/ -iname '*.so' -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+    fi
+    if [[ -d usr/sbin ]]; then
+        find usr/sbin/ -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+    fi
+    if [[ -d usr/bin ]]; then
+        find usr/bin/ -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+    fi
     echo
+    install -m 0755 -d usr/lib64/tomcat-native/private
+    cp -af usr/lib64/*.so* usr/lib64/tomcat-native/private/
     rm -fr /usr/include/openssl
+    rm -fr /usr/include/x86_64-linux-gnu/openssl
+    rm -fr /usr/local/openssl-1.1.1
+    rm -f /etc/ld.so.conf.d/openssl-1.1.1.conf
     sleep 2
     /bin/cp -afr * /
+    sleep 2
     cd /tmp
     rm -fr "${_tmp_dir}"
+    rm -fr /tmp/openssl111
     /sbin/ldconfig
 }
 
@@ -255,31 +324,45 @@ make all
 rm -fr /tmp/tcn12
 make DESTDIR=/tmp/tcn12 install
 cd /tmp/tcn12
+if [[ "$(pwd)" = '/' ]]; then
+    echo
+    printf '\e[01;31m%s\e[m\n' "Current dir is '/'"
+    printf '\e[01;31m%s\e[m\n' "quit"
+    echo
+    exit 1
+else
+    rm -fr lib64
+    rm -fr lib
+    chown -R root:root ./
+fi
 find usr/ -type f -iname '*.la' -delete
-if [[ -d usr/sbin ]]; then
-    file usr/sbin/* | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs -I '{}' /usr/bin/strip '{}'
-fi
-if [[ -d usr/bin ]]; then
-    file usr/bin/* | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs -I '{}' /usr/bin/strip '{}'
-fi
-if [[ -d usr/lib/x86_64-linux-gnu ]]; then
-    find usr/lib/x86_64-linux-gnu/ -iname 'lib*.so*' -type f -exec /usr/bin/strip "{}" \;
-    find usr/lib/x86_64-linux-gnu/ -iname '*.so' -type f -exec /usr/bin/strip "{}" \;
-elif [[ -d usr/lib64/ ]]; then
-    find usr/lib64/ -iname 'lib*.so*' -type f -exec /usr/bin/strip "{}" \;
-    find usr/lib64/ -iname '*.so' -type f -exec /usr/bin/strip "{}" \;
-fi
 if [[ -d usr/share/man ]]; then
     find -L usr/share/man/ -type l -exec rm -f '{}' \;
+    sleep 2
     find usr/share/man/ -type f -iname '*.[1-9]' -exec gzip -f -9 '{}' \;
     sleep 2
     find -L usr/share/man/ -type l | while read file; do ln -svf "$(readlink -s "${file}").gz" "${file}.gz" ; done
     sleep 2
     find -L usr/share/man/ -type l -exec rm -f '{}' \;
 fi
-cp -a /tmp/zlib/usr/lib64/lib*.so* usr/lib64/
-cp -a /tmp/apr/usr/lib64/lib*.so* usr/lib64/
-cp -a /tmp/openssl111/usr/lib64/lib*.so* usr/lib64/
+if [[ -d usr/lib/x86_64-linux-gnu ]]; then
+    find usr/lib/x86_64-linux-gnu/ -type f \( -iname '*.so' -or -iname '*.so.*' \) | xargs --no-run-if-empty -I '{}' chmod 0755 '{}'
+    find usr/lib/x86_64-linux-gnu/ -iname 'lib*.so*' -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+    find usr/lib/x86_64-linux-gnu/ -iname '*.so' -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+fi
+if [[ -d usr/lib64 ]]; then
+    find usr/lib64/ -type f \( -iname '*.so' -or -iname '*.so.*' \) | xargs --no-run-if-empty -I '{}' chmod 0755 '{}'
+    find usr/lib64/ -iname 'lib*.so*' -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+    find usr/lib64/ -iname '*.so' -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+fi
+if [[ -d usr/sbin ]]; then
+    find usr/sbin/ -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+fi
+if [[ -d usr/bin ]]; then
+    find usr/bin/ -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
+fi
+echo
+/bin/cp -af /usr/lib64/tomcat-native/private/* usr/lib64/
 rm -f usr/lib64/*.a
 rm -fr /tmp/tomcat-native
 sleep 2
@@ -287,12 +370,12 @@ cp -afr usr/lib64 /tmp/tomcat-native
 echo
 sleep 2
 cd /tmp
-tar -Jcvf /tmp/"libtcnative-${_tcn12_ver}_openssl-${_openssl111_ver}_java8-1.el7.x86_64.tar.xz" tomcat-native
+tar -Jcvf /tmp/"tomcat-native-${_tcn12_ver}_openssl-${_openssl111_ver}_java8-1.el7.x86_64.tar.xz" tomcat-native
 echo
 sleep 2
 cd /tmp
 rm -fr "${_tmp_dir}"
-rm -fr /tmp/zlib /tmp/apr /tmp/openssl111 /tmp/tcn12 /tmp/tomcat-native
+rm -fr /tmp/tcn12 /tmp/tomcat-native
 echo
 echo ' done'
 echo

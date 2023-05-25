@@ -373,7 +373,7 @@ sleep 2
 cd /tmp
 openssl dgst -r -sha256 tomcat-native-${_tcn20_ver}_openssl-${_openssl30_ver}_java11-1.el7.x86_64.tar.xz | sed 's|\*| |g' > tomcat-native-${_tcn20_ver}_openssl-${_openssl30_ver}_java11-1.el7.x86_64.tar.xz.sha256
 rm -fr "${_tmp_dir}"
-rm -fr /tmp/tcn12 /tmp/tomcat-native
+rm -fr /tmp/tcn20 /tmp/tomcat-native
 echo
 echo ' done'
 echo

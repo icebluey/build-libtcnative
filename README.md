@@ -67,7 +67,8 @@ Insert a line below ```<Engine name="Catalina" defaultHost="localhost">``` in se
 ```
 <Realm className="org.apache.catalina.realm.LockOutRealm" transportGuaranteeRedirectStatus="301">
 ```
-Add to web.xml above ```</web-app>```
+Add to web.xml above last line ```</web-app>```
+
 ```
     <security-constraint>
         <web-resource-collection>
@@ -78,6 +79,4 @@ Add to web.xml above ```</web-app>```
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
-
-</web-app>
 ```

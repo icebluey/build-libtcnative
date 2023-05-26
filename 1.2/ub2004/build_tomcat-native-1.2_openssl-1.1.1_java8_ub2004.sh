@@ -265,6 +265,8 @@ _build_openssl111() {
         find usr/bin/ -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
     fi
     echo
+    install -m 0755 -d usr/lib/x86_64-linux-gnu/tomcat-native/private
+    cp -af usr/lib/x86_64-linux-gnu/*.so* usr/lib/x86_64-linux-gnu/tomcat-native/private/
     rm -f /lib/x86_64-linux-gnu/libssl.*
     rm -f /lib/x86_64-linux-gnu/libcrypto.*
     rm -f /usr/lib/x86_64-linux-gnu/libssl.*

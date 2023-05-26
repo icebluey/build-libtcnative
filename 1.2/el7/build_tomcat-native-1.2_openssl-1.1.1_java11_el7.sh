@@ -363,6 +363,7 @@ if [[ -d usr/bin ]]; then
     find usr/bin/ -type f -exec file '{}' \; | sed -n -e 's/^\(.*\):[  ]*ELF.*, not stripped.*/\1/p' | xargs --no-run-if-empty -I '{}' /usr/bin/strip '{}'
 fi
 echo
+install -m 0755 -d usr/lib64
 /bin/cp -af /usr/lib64/tomcat-native/private/* usr/lib64/
 rm -f usr/lib64/*.a
 rm -fr /tmp/tomcat-native
@@ -377,7 +378,8 @@ sleep 2
 cd /tmp
 openssl dgst -r -sha256 tomcat-native-${_tcn12_ver}_openssl-${_openssl111_ver}_java11-1.el7.x86_64.tar.xz | sed 's|\*| |g' > tomcat-native-${_tcn12_ver}_openssl-${_openssl111_ver}_java11-1.el7.x86_64.tar.xz.sha256
 rm -fr "${_tmp_dir}"
-rm -fr /tmp/tcn12 /tmp/tomcat-native
+rm -fr /tmp/tcn12
+rm -fr /tmp/tomcat-native
 echo
 echo ' done'
 echo

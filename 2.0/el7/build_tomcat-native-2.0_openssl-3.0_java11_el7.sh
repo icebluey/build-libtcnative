@@ -204,6 +204,8 @@ _build_openssl30() {
     sleep 1
     rm -f "openssl-${_openssl30_ver}.tar.gz"
     cd "openssl-${_openssl30_ver}"
+    # Only for debian/ubuntu
+    #sed '/define X509_CERT_FILE .*OPENSSLDIR "/s|"/cert.pem"|"/certs/ca-certificates.crt"|g' -i include/internal/cryptlib.h
     sed '/install_docs:/s| install_html_docs||g' -i Configurations/unix-Makefile.tmpl
     LDFLAGS='' ; LDFLAGS='-Wl,-z,relro -Wl,--as-needed -Wl,-z,now -Wl,-rpath,\$$ORIGIN' ; export LDFLAGS
     HASHBANGPERL=/usr/bin/perl

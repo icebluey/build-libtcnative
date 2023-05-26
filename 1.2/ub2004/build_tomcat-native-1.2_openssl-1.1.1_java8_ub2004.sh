@@ -367,9 +367,6 @@ sleep 2
 cp -afr usr/lib/x86_64-linux-gnu /tmp/tomcat-native
 echo
 sleep 2
-cp -afr usr/lib/x86_64-linux-gnu /tmp/tomcat-native
-echo
-sleep 2
 cd /tmp
 tar -Jcvf /tmp/"tomcat-native-${_tcn12_ver}_openssl-${_openssl111_ver}_java8-1.ub2004.x86_64.tar.xz" tomcat-native
 echo

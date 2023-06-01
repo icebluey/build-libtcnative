@@ -200,10 +200,10 @@ _build_openssl30() {
     cd "${_tmp_dir}"
     _openssl30_ver="$(wget -qO- 'https://www.openssl.org/source/' | grep 'href="openssl-3\.0\.' | sed 's|"|\n|g' | grep -i '^openssl-3\.0\..*\.tar\.gz$' | cut -d- -f2 | sed 's|\.tar.*||g' | sort -V | uniq | tail -n 1)"
     wget -c -t 9 -T 9 "https://www.openssl.org/source/openssl-${_openssl30_ver}.tar.gz"
-    tar -xof "openssl-${_openssl30_ver}.tar.gz"
+    tar -xof openssl-*.tar*
     sleep 1
-    rm -f "openssl-${_openssl30_ver}.tar.gz"
-    cd "openssl-${_openssl30_ver}"
+    rm -f openssl-*.tar*
+    cd openssl-*
     # Only for debian/ubuntu
     #sed '/define X509_CERT_FILE .*OPENSSLDIR "/s|"/cert.pem"|"/certs/ca-certificates.crt"|g' -i include/internal/cryptlib.h
     sed '/install_docs:/s| install_html_docs||g' -i Configurations/unix-Makefile.tmpl

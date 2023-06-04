@@ -285,7 +285,7 @@ _build_openssl111() {
     /sbin/ldconfig
 }
 
-rm -fr /usr/lib64/tomcat-native/private
+rm -fr /usr/lib64/tomcat-native
 _build_zlib
 _build_apr
 _build_openssl111

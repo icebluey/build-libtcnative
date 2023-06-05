@@ -46,13 +46,14 @@ Tomcat Native 1.2 for Tomcat 8 and 9
 ```
 
 # setenv.sh
-under tomcat/bin/
+```bin/setenv.sh```
 ```
 LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH:$CATALINA_HOME/lib
 export LD_LIBRARY_PATH
 ```
 
 # Java
+```/etc/profile.d/java.sh```
 ```
 JAVA_HOME=/usr/java/jdk
 export JAVA_HOME

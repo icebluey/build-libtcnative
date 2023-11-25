@@ -19,8 +19,8 @@ Tomcat Native 1.2 for Tomcat 8 and 9
                maxThreads="300" SSLEnabled="true" scheme="https" secure="true" >
         <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol" />
         <SSLHostConfig protocols="TLSv1.3+TLSv1.2" >
-        <Certificate certificateKeyFile="keys/domain.key"
-            certificateFile="keys/domain.crt"
+        <Certificate certificateKeyFile="keys/server.key"
+            certificateFile="keys/server.crt"
             certificateChainFile="keys/fullchain.crt"
                          type="RSA" />
         </SSLHostConfig>
@@ -36,8 +36,8 @@ Tomcat Native 1.2 for Tomcat 8 and 9
                maxThreads="300" SSLEnabled="true" scheme="https" secure="true" >
         <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol" />
         <SSLHostConfig protocols="TLSv1.3+TLSv1.2" >
-        <Certificate certificateKeyFile="keys/domain.key"
-            certificateFile="keys/domain.crt"
+        <Certificate certificateKeyFile="keys/server.key"
+            certificateFile="keys/server.crt"
             certificateChainFile="keys/fullchain.crt"
                          type="RSA" />
         </SSLHostConfig>

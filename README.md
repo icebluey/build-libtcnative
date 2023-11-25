@@ -44,7 +44,7 @@ Tomcat Native 1.2 for Tomcat 8 and 9
 # setenv.sh
 ```bin/setenv.sh```
 ```
-LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH:$CATALINA_HOME/lib
+LD_LIBRARY_PATH=/usr/local/tomcat-native:$LD_LIBRARY_PATH:$CATALINA_HOME/lib
 export LD_LIBRARY_PATH
 ```
 

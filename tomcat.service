@@ -7,6 +7,7 @@ After=syslog.target network.target
 Type=forking
 Environment='CATALINA_HOME=/opt/tomcat'
 Environment='CATALINA_BASE=/opt/tomcat'
+Environment='CATALINA_TMPDIR=/opt/tomcat/temp'
 Environment='CATALINA_PID=/opt/tomcat/temp/tomcat.pid'
 Environment='CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC'
 Environment='JAVA_HOME=/usr/java/jdk'

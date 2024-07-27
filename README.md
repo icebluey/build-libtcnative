@@ -88,7 +88,8 @@ sysctl --system
 
 
 getent group tomcat >/dev/null || groupadd -r tomcat
-getent passwd tomcat >/dev/null || useradd -r -d /opt/tomcat -g tomcat -s /usr/sbin/nologin -c "Apache Tomcat" tomcat
+getent passwd tomcat >/dev/null || useradd -r -d /opt/tomcat \
+  -g tomcat -s /usr/sbin/nologin -c "Apache Tomcat" tomcat
 
 chown -R tomcat:tomcat /opt/tomcat
 

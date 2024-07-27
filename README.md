@@ -79,3 +79,19 @@ Add to web.xml above last line ```</web-app>```
         </user-data-constraint>
     </security-constraint>
 ```
+
+```
+#save configuration permanently
+echo 'net.ipv4.ip_unprivileged_port_start=0' > /etc/sysctl.d/50-unprivileged-ports.conf
+#apply conf
+sysctl --system
+
+
+getent group tomcat >/dev/null || groupadd -r tomcat
+getent passwd tomcat >/dev/null || useradd -r -d /opt/tomcat -g tomcat -s /usr/sbin/nologin -c "Apache Tomcat" tomcat
+
+chown -R tomcat:tomcat /opt/tomcat
+
+/bin/su -s /bin/bash -c "/opt/tomcat/bin/startup.sh" tomcat
+```
+

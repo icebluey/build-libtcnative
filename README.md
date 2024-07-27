@@ -1,7 +1,7 @@
 Tomcat 8.5 requires Java 7 or later.\
 Tomcat 9.0 requires Java 8 or later.\
 Tomcat 10.1 requires Java 11 or later.\
-Tomcat Native 2 for Tomcat 10.1\
+Tomcat Native 2 for Tomcat 9 and later.\
 Tomcat Native 1.2 for Tomcat 8 and 9
 
 # server.xml

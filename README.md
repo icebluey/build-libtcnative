@@ -94,5 +94,6 @@ getent passwd tomcat >/dev/null || useradd -r -d /opt/tomcat \
 chown -R tomcat:tomcat /opt/tomcat
 
 /bin/su -s /bin/bash -c "/opt/tomcat/bin/startup.sh" tomcat
+
 ```
 

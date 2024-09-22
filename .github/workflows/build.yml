@@ -25,7 +25,7 @@ jobs:
           sudo /bin/bash 2.0/run-build-ub2004.sh
           sudo /bin/systemctl stop docker.socket docker.service containerd.service
           sudo /bin/rm -fr /var/lib/docker/* /var/lib/containerd/*
-      - name: Upload Apache Tomcat ub2204
+      - name: Upload Apache Tomcat 2.0 ub2204
         run: |
           _dateutc=$(date -u +%Y-%m-%d-%H%M)
           _repo="$(echo ${{ github.repository }} | awk -F '/' '{print $2}')"

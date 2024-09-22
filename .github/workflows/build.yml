@@ -29,7 +29,7 @@ jobs:
         run: |
           _dateutc=$(date -u +%Y-%m-%d-%H%M)
           _repo="$(echo ${{ github.repository }} | awk -F '/' '{print $2}')"
-          _tcnative_ver="$(sudo ls -1 /home/.tmp/tomcat-native-* | grep -i '^tomcat-native-.*gz$' | sed -e 's|tomcat-native-||g' -e 's|_openssl.*||g')"
+          _tcnative_ver="$(sudo ls -1 /home/.tmp/tomcat-native-* | grep -i 'tomcat-native-.*gz$' | sed -e 's|.*tomcat-native-||g' -e 's|_openssl.*||g')"
           sudo /bin/ls -lah /home/.tmp/
           sudo /bin/ls -1 /home/.tmp/tomcat-native-* 2>/dev/null | xargs --no-run-if-empty -I '{}' sudo /bin/bash scripts/.upload_file_to_github-release.sh --token ${{ secrets.GITHUB_TOKEN }} --user "${{ github.repository_owner }}" --repo "${_repo}" --file "{}" --tag "v${_tcnative_ver}"
           sleep 2

@@ -374,11 +374,11 @@ cp -afr usr/lib/x86_64-linux-gnu /tmp/tomcat-native
 echo
 sleep 2
 cd /tmp
-tar -Jcvf /tmp/"tomcat-native-${_tcn20_ver}_openssl-${_openssl33_ver}_java11-1.ub2004.x86_64.tar.xz" tomcat-native
+tar -zcvf /tmp/"tomcat-native-${_tcn20_ver}_openssl-${_openssl33_ver}_java11-1.ub2004.x86_64.tar.gz" tomcat-native
 echo
 sleep 2
 cd /tmp
-openssl dgst -r -sha256 tomcat-native-${_tcn20_ver}_openssl-${_openssl33_ver}_java11-1.ub2004.x86_64.tar.xz | sed 's|\*| |g' > tomcat-native-${_tcn20_ver}_openssl-${_openssl33_ver}_java11-1.ub2004.x86_64.tar.xz.sha256
+openssl dgst -r -sha256 tomcat-native-${_tcn20_ver}_openssl-${_openssl33_ver}_java11-1.ub2004.x86_64.tar.gz | sed 's|\*| |g' > tomcat-native-${_tcn20_ver}_openssl-${_openssl33_ver}_java11-1.ub2004.x86_64.tar.gz.sha256
 rm -fr "${_tmp_dir}"
 rm -fr /tmp/tcn20
 rm -fr /tmp/tomcat-native
@@ -386,4 +386,3 @@ echo
 echo ' done'
 echo
 exit
-

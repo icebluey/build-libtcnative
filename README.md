@@ -4,6 +4,13 @@ Tomcat 10.1 requires Java 11 or later.\
 Tomcat Native 2 for Tomcat 9 or later.\
 Tomcat Native 1.2 for Tomcat 8 and 9
 
+```
+Tomcat Native 2.0.X:
+the minimum required version of OpenSSL to 3.0
+the minimum required version of APR to 1.7
+the minimum required Java version to Java 11
+```
+
 # server.xml
 
 ```

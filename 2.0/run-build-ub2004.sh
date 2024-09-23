@@ -16,7 +16,7 @@ docker cp 2.0 ub2004:/home/
 docker exec ub2004 /bin/bash /home/2.0/ub2004/.preinstall_ub2004
 docker exec ub2004 /bin/bash /home/2.0/ub2004/build_tomcat-native-2.0_openssl-3.3_java11_ub2004.sh
 _tcnative_ver="$(docker exec ub2004 ls -1 /tmp/ | grep -i 'tomcat-native-.*gz$' | sed -e 's|.*tomcat-native-||g' -e 's|_openssl.*||g')"
-_ssl_ver="$(docker exec ub2004 ls -1 /tmp/ | grep -i 'tomcat-native-.*gz$' | sed -e 's|.*openssl-||g' -e 's|_java.*||g')"
+_ssl_ver="$(docker exec ub2004 ls -1 /tmp/ | grep -i 'tomcat-native-.*gz$' | sed -e 's|.*openssl-||g' -e 's|_j.*||g')"
 rm -fr /home/.tmp
 mkdir /home/.tmp
 docker cp ub2004:/tmp/"tomcat-native-${_tcnative_ver}_openssl-${_ssl_ver}_j11-1.ub2004.amd64.tar.gz" /home/.tmp/

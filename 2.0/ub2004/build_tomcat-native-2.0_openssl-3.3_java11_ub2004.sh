@@ -97,7 +97,7 @@ _build_zlib() {
     rm -f zlib-*.tar*
     cd zlib-*
     ./configure --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu --includedir=/usr/include --64
-    make -j$(cat /proc/cpuinfo | grep -i '^processor' | wc -l) all
+    make -j$(nproc --all) all
     rm -fr /tmp/zlib
     make DESTDIR=/tmp/zlib install
     cd /tmp/zlib
@@ -131,7 +131,7 @@ _build_brotli() {
         --build=x86_64-linux-gnu --host=x86_64-linux-gnu \
         --enable-shared --disable-static \
         --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu --includedir=/usr/include --sysconfdir=/etc
-        make -j$(cat /proc/cpuinfo | grep -i '^processor' | wc -l) all
+        make -j$(nproc --all) all
         rm -fr /tmp/brotli
         make install DESTDIR=/tmp/brotli
     else
@@ -149,7 +149,7 @@ _build_brotli() {
         -DLIB_SUFFIX=64 \
         -DBUILD_SHARED_LIBS:BOOL=ON \
         -DCMAKE_INSTALL_SO_NO_EXE:INTERNAL=0
-        cmake --build "build"  --verbose
+        cmake -j$(nproc --all) --build "build"  --verbose
         rm -fr /tmp/brotli
         DESTDIR="/tmp/brotli" cmake --install "build"
     fi
@@ -187,7 +187,7 @@ _build_zstd() {
     sed '/^prefix/s|= .*|= /usr|g' -i programs/Makefile
     #sed '/^libdir/s|= .*|= /usr/lib/x86_64-linux-gnu|g' -i programs/Makefile
     LDFLAGS='' ; LDFLAGS="${_ORIG_LDFLAGS}"' -Wl,-rpath,\$$OOORIGIN' ; export LDFLAGS
-    make -j$(cat /proc/cpuinfo | grep -i '^processor' | wc -l) V=1 prefix=/usr libdir=/usr/lib/x86_64-linux-gnu
+    make -j$(nproc --all) V=1 prefix=/usr libdir=/usr/lib/x86_64-linux-gnu
     rm -fr /tmp/zstd
     make install DESTDIR=/tmp/zstd
     cd /tmp/zstd
@@ -222,7 +222,7 @@ _build_apr() {
     --sysconfdir=/etc --datadir=/usr/share --includedir=/usr/include \
     --libdir=/usr/lib/x86_64-linux-gnu --libexecdir=/usr/libexec --localstatedir=/var \
     --sharedstatedir=/var/lib --mandir=/usr/share/man --infodir=/usr/share/info
-    make -j$(nproc) all
+    make -j$(nproc --all) all
     rm -fr /tmp/apr
     make DESTDIR=/tmp/apr install
     cd /tmp/apr
@@ -269,7 +269,7 @@ _build_openssl33() {
     no-sm2 no-sm2-precomp no-sm3 no-sm4 \
     shared linux-x86_64 '-DDEVRANDOM="\"/dev/urandom\""'
     perl configdata.pm --dump
-    make -j$(cat /proc/cpuinfo | grep -i '^processor' | wc -l) all
+    make -j$(nproc --all) all
     rm -fr /tmp/openssl33
     make DESTDIR=/tmp/openssl33 install_sw
     cd /tmp/openssl33

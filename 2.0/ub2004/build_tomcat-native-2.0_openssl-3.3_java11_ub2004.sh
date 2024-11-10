@@ -149,7 +149,7 @@ _build_brotli() {
         -DLIB_SUFFIX=64 \
         -DBUILD_SHARED_LIBS:BOOL=ON \
         -DCMAKE_INSTALL_SO_NO_EXE:INTERNAL=0
-        cmake --parallel $(nproc --all) --build "build"  --verbose
+        cmake --build "build" --parallel $(nproc --all) --verbose
         rm -fr /tmp/brotli
         DESTDIR="/tmp/brotli" cmake --install "build"
     fi

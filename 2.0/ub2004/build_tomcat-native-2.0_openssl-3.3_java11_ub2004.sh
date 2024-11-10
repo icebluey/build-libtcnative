@@ -296,6 +296,8 @@ _build_openssl33() {
 
 rm -fr /usr/lib/x86_64-linux-gnu/tomcat-native
 _build_zlib
+_build_brotli
+_build_zstd
 _build_apr
 _build_openssl33
 _install_java11

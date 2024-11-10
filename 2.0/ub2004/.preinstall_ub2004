@@ -105,9 +105,9 @@ _install_wget() {
     _release_ver='' ; _dl_path=''
 }
 
-_install_git
-_install_curl
-_install_wget
+#_install_git
+#_install_curl
+#_install_wget
 #################################################################################
 
 exit

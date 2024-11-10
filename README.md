@@ -108,3 +108,13 @@ chown -R tomcat:tomcat /opt/tomcat
 
 ```
 
+```
+CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC
+Environment='CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC'
+
+-Xms512M：设置 Java 虚拟机的初始内存分配池大小为 512MB。Tomcat 启动时会分配这个内存大小。
+-Xmx1024M：设置 Java 虚拟机的最大内存分配池大小为 1024MB。当应用程序需要更多内存时，JVM 可以增长到这个限制。
+-server：指定 JVM 以服务器模式运行，这通常会提升性能。对于生产环境来说是推荐的设置。
+-XX:+UseParallelGC：启用并行垃圾回收器（Parallel GC），会使用多个线程进行垃圾回收，适合 CPU 核心较多的系统。
+
+```

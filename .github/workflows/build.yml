@@ -19,7 +19,7 @@ jobs:
           sudo /bin/bash scripts/clean-os.sh;
           sudo /bin/bash scripts/install-docker.sh
 
-      - name: Build Apache Tomcat 2.0 ub2204
+      - name: Build Apache Tomcat 2.0 ub2004
         run: |
           sudo /bin/bash 2.0/run-build-ub2004.sh
           sudo /bin/systemctl stop docker.socket docker.service containerd.service

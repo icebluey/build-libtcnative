@@ -58,7 +58,10 @@ export LD_LIBRARY_PATH
 ```
 
 # Java
-```/etc/profile.d/java.sh```
+```
+ubuntu: /etc/bash.bashrc
+rhel: /etc/bashrc
+```
 ```
 JAVA_HOME=/usr/java/jdk
 export JAVA_HOME

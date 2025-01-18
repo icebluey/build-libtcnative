@@ -19,7 +19,7 @@ docker exec ub2004 apt update -y
 docker exec ub2004 apt install -y bash vim wget ca-certificates curl
 docker exec ub2004 /bin/ln -svf bash /bin/sh
 docker exec ub2004 /bin/bash -c '/bin/rm -fr /tmp/*'
-docker cp 2.0 ub2004:/home/
+docker cp 1.2 ub2004:/home/
 docker exec ub2004 /bin/bash /home/1.2/ub2004/.preinstall_ub2004
 docker exec ub2004 /bin/bash /home/1.2/ub2004/build_tomcat-native-1.2_openssl-3.0_java8_ub2004.sh
 mkdir -p /tmp/_output_assets

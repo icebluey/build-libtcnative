@@ -578,6 +578,11 @@ openssl dgst -r -sha256 tomcat-native-${_tcn12_ver}_openssl-${_openssl30_ver}_ja
 rm -fr "${_tmp_dir}"
 rm -fr /tmp/tcn12
 rm -fr /tmp/tomcat-native
+
+rm -fr /tmp/_output
+install -m 0755 -d /tmp/_output
+mv -v /tmp/tomcat-native*.tar* /tmp/_output/
+
 echo
 echo ' done'
 echo

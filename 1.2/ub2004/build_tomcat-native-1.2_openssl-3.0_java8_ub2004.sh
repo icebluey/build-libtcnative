@@ -58,13 +58,6 @@ _strip_files() {
     echo
 }
 
-if ! grep -q -i '^1:.*docker' /proc/1/cgroup; then
-    echo
-    echo ' Not in a container!'
-    echo
-    exit 1
-fi
-
 _install_java8() {
     set -e
     _tmp_dir="$(mktemp -d)"
@@ -90,7 +83,6 @@ _install_java8() {
     cd /tmp
     rm -fr "${_tmp_dir}"
 }
-
 
 _build_zlib() {
     /sbin/ldconfig

@@ -18,7 +18,8 @@ the minimum required Java version to Java 11
 ```
 
 ```
-# tomcat v8.5, v9.0
+# tomcat v8.5, v9.0, using tomcat native 1.x
+# type="RSA" or type="EC"
 
     <Connector port="80" protocol="org.apache.coyote.http11.Http11AprProtocol"
                connectionTimeout="20000" redirectPort="443" />
@@ -33,7 +34,10 @@ the minimum required Java version to Java 11
         </SSLHostConfig>
     </Connector>
 
-# tomcat v10.1
+
+
+# tomcat v10.1, using tomcat native 2.x
+# type="RSA" or type="EC"
 
     <Connector port="80" protocol="org.apache.coyote.http11.Http11Nio2Protocol"
                connectionTimeout="20000" redirectPort="443" />

@@ -21,7 +21,7 @@ docker exec ub2004 /bin/ln -svf bash /bin/sh
 docker exec ub2004 /bin/bash -c '/bin/rm -fr /tmp/*'
 docker cp 2.0 ub2004:/home/
 docker exec ub2004 /bin/bash /home/2.0/ub2004/.preinstall_ub2004
-docker exec ub2004 /bin/bash /home/2.0/ub2004/build_tomcat-native-2.0_openssl-3.3_java11_ub2004.sh
+docker exec ub2004 /bin/bash /home/2.0/ub2004/build_tomcat-native-2.0_openssl-3_java11_ub2004.sh
 mkdir -p /tmp/_output_assets
 docker cp ub2004:/tmp/_output /tmp/_output_assets/
 exit

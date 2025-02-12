@@ -500,8 +500,8 @@ _tmp_dir="$(mktemp -d)"
 cd "${_tmp_dir}"
 
 #_tcn12_ver="$(wget -qO- 'https://tomcat.apache.org/download-native.cgi' | grep -i 'href="https://.*tomcat-native-1\.2\..*\.tar\.gz' | sed -e 's|"|\n|g' -e 's|/|\n|g' | grep -i '^tomcat-native-1\.2\..*\.tar.gz$' | sed -e 's|tomcat-native-||g' -e 's|-.*||g' | sort -V | uniq | tail -n 1)"
-_tcn12_ver="$(wget -qO- 'https://tomcat.apache.org/download-native.cgi' | grep -i 'href="https://.*tomcat-native-1\.3\..*\.tar\.gz' | sed -e 's|"|\n|g' -e 's|/|\n|g' | grep -i '^tomcat-native-1\.3\..*\.tar.gz$' | sed -e 's|tomcat-native-||g' -e 's|-.*||g' | sort -V | uniq | tail -n 1)"
-wget -c -t 9 -T 9 "https://dlcdn.apache.org/tomcat/tomcat-connectors/native/${_tcn12_ver}/source/tomcat-native-${_tcn12_ver}-src.tar.gz"
+_tcn13_ver="$(wget -qO- 'https://tomcat.apache.org/download-native.cgi' | grep -i 'href="https://.*tomcat-native-1\.3\..*\.tar\.gz' | sed -e 's|"|\n|g' -e 's|/|\n|g' | grep -i '^tomcat-native-1\.3\..*\.tar.gz$' | sed -e 's|tomcat-native-||g' -e 's|-.*||g' | sort -V | uniq | tail -n 1)"
+wget -c -t 9 -T 9 "https://dlcdn.apache.org/tomcat/tomcat-connectors/native/${_tcn13_ver}/source/tomcat-native-${_tcn13_ver}-src.tar.gz"
 tar -xof tomcat-native-*.tar*
 sleep 1
 rm -f tomcat-native-*.tar*
@@ -521,9 +521,9 @@ sed '/TCN_OPENSSL_LIBS="/s| -R$use_openssl/$ssllibdir||g' -i configure
 sed 's| -R/usr/lib64||g' -i Makefile
 sed 's| -R/usr/lib/x86_64-linux-gnu||g' -i Makefile
 make all
-rm -fr /tmp/tcn12
-make DESTDIR=/tmp/tcn12 install
-cd /tmp/tcn12
+rm -fr /tmp/tcn13
+make DESTDIR=/tmp/tcn13 install
+cd /tmp/tcn13
 if [[ "$(pwd)" = '/' ]]; then
     echo
     printf '\e[01;31m%s\e[m\n' "Current dir is '/'"
@@ -570,13 +570,13 @@ cp -afr usr/lib/x86_64-linux-gnu /tmp/tomcat-native
 echo
 sleep 2
 cd /tmp
-tar -Jcvf /tmp/"tomcat-native-${_tcn12_ver}_openssl-${_openssl33_ver}_java8-1.ub2004.x86_64.tar.xz" tomcat-native
+tar -Jcvf /tmp/"tomcat-native-${_tcn13_ver}_openssl-${_openssl33_ver}_java8-1.ub2004.x86_64.tar.xz" tomcat-native
 echo
 sleep 2
 cd /tmp
-openssl dgst -r -sha256 tomcat-native-${_tcn12_ver}_openssl-${_openssl33_ver}_java8-1.ub2004.x86_64.tar.xz | sed 's|\*| |g' > tomcat-native-${_tcn12_ver}_openssl-${_openssl33_ver}_java8-1.ub2004.x86_64.tar.xz.sha256
+openssl dgst -r -sha256 tomcat-native-${_tcn13_ver}_openssl-${_openssl33_ver}_java8-1.ub2004.x86_64.tar.xz | sed 's|\*| |g' > tomcat-native-${_tcn13_ver}_openssl-${_openssl33_ver}_java8-1.ub2004.x86_64.tar.xz.sha256
 rm -fr "${_tmp_dir}"
-rm -fr /tmp/tcn12
+rm -fr /tmp/tcn13
 rm -fr /tmp/tomcat-native
 
 rm -fr /tmp/_output

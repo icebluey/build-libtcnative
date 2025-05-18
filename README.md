@@ -22,6 +22,15 @@ the minimum required Java version to Java 11
 # tomcat v8.5, v9.0, using tomcat native 1.x
 # type="RSA" or type="EC"
 
+在
+<Server port="8005" shutdown="SHUTDOWN">
+  <Service name="Catalina">
+中配置
+    <Connector ...>
+    </Connector>
+
+
+
     <Connector port="80" protocol="org.apache.coyote.http11.Http11AprProtocol"
                connectionTimeout="20000" redirectPort="443" />
     <Connector port="443" protocol="org.apache.coyote.http11.Http11AprProtocol"
@@ -43,13 +52,46 @@ the minimum required Java version to Java 11
     <Connector port="80" protocol="org.apache.coyote.http11.Http11Nio2Protocol"
                connectionTimeout="20000" redirectPort="443" />
     <Connector port="443" protocol="org.apache.coyote.http11.Http11Nio2Protocol"
-               maxThreads="300" SSLEnabled="true" scheme="https" secure="true" >
+               maxThreads="300" SSLEnabled="true" scheme="https" secure="true">
         <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol" />
         <SSLHostConfig protocols="TLSv1.3+TLSv1.2" >
             <Certificate certificateKeyFile="keys/server.key"
                          certificateFile="keys/server.crt"
                          certificateChainFile="keys/fullchain.crt"
                          type="RSA" />
+        </SSLHostConfig>
+    </Connector>
+
+
+
+# Multiple ssl certificates
+    <Connector port="80" protocol="org.apache.coyote.http11.Http11Nio2Protocol"
+               connectionTimeout="20000" redirectPort="443" />
+    <Connector port="443" protocol="org.apache.coyote.http11.Http11Nio2Protocol"
+               maxThreads="300" SSLEnabled="true" scheme="https" secure="true"
+               defaultSSLHostConfigName="ec.test.internal">
+        <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol" />
+        <SSLHostConfig protocols="TLSv1.3+TLSv1.2"
+                       hostName="rsa.test.internal"
+                       ciphers="ECDHE-RSA-CHACHA20-POLY1305,
+                                ECDHE-RSA-AES256-GCM-SHA384,
+                                ECDHE-RSA-AES128-GCM-SHA256">
+            <Certificate certificateKeyFile="keys/server_rsa.key"
+                         certificateFile="keys/server_rsa.crt"
+                         certificateChainFile="keys/fullchain_rsa.crt"
+                         type="RSA" />
+        </SSLHostConfig>
+        <SSLHostConfig protocols="TLSv1.3+TLSv1.2"
+                       hostName="ec.test.internal"
+                       ciphers="ECDHE-ECDSA-CHACHA20-POLY1305,
+                                ECDHE-ECDSA-AES256-GCM-SHA384,
+                                ECDHE-ECDSA-AES128-GCM-SHA256,
+                                ECDHE-ECDSA-AES256-CCM,
+                                ECDHE-ECDSA-AES128-CCM">
+            <Certificate certificateKeyFile="keys/server_ec.key"
+                         certificateFile="keys/server_ec.crt"
+                         certificateChainFile="keys/fullchain_ec.crt"
+                         type="EC" />
         </SSLHostConfig>
     </Connector>
 

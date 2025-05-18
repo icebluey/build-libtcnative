@@ -29,6 +29,16 @@ the minimum required Java version to Java 11
     <Connector ...>
     </Connector>
 
+# TLSv1.2
+# strings libssl.so.3 | grep -E '^ECDHE-RSA|^ECDHE-ECDSA' | grep -E 'CHACHA20|AES' | grep -E 'CHACHA20|GCM|CCM' | grep -vE ':|CCM8' | sort -Vr
+ECDHE-RSA-CHACHA20-POLY1305
+ECDHE-RSA-AES256-GCM-SHA384
+ECDHE-RSA-AES128-GCM-SHA256
+ECDHE-ECDSA-CHACHA20-POLY1305
+ECDHE-ECDSA-AES256-GCM-SHA384
+ECDHE-ECDSA-AES256-CCM
+ECDHE-ECDSA-AES128-GCM-SHA256
+ECDHE-ECDSA-AES128-CCM
 
 
     <Connector port="80" protocol="org.apache.coyote.http11.Http11AprProtocol"
@@ -94,6 +104,7 @@ the minimum required Java version to Java 11
                          type="EC" />
         </SSLHostConfig>
     </Connector>
+
 
 ```
 

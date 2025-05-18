@@ -15,7 +15,7 @@ else
 fi
 sleep 2
 docker exec ub2004 apt update -y
-#docker exec ub2004 apt upgrade -fy
+docker exec ub2004 apt upgrade -fy
 docker exec ub2004 apt install -y bash vim wget ca-certificates curl
 docker exec ub2004 /bin/ln -svf bash /bin/sh
 docker exec ub2004 /bin/bash -c '/bin/rm -fr /tmp/*'

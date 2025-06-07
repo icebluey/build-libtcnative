@@ -129,6 +129,11 @@ ECDHE-ECDSA-AES128-CCM
 ```
 LD_LIBRARY_PATH=/usr/local/tomcat-native:$LD_LIBRARY_PATH:$CATALINA_HOME/lib
 export LD_LIBRARY_PATH
+
+echo 'LD_LIBRARY_PATH=/usr/local/tomcat-native:$LD_LIBRARY_PATH:$CATALINA_HOME/lib
+export LD_LIBRARY_PATH' >> setenv.sh
+chmod 0750 setenv.sh
+
 ```
 
 # Java

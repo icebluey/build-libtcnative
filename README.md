@@ -12,6 +12,12 @@ the minimum required version of APR to 1.7
 the minimum required Java version to Java 11
 ```
 
+# create /etc/ssl/cert.pem
+```
+if [ -e /etc/ssl/certs/ca-certificates.crt ] && [ ! -e /etc/ssl/cert.pem ]; then ln -sv certs/ca-certificates.crt /etc/ssl/cert.pem; fi
+if [ -e /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem ] && [ ! -e /etc/ssl/cert.pem ]; then ([ -e /etc/ssl ] || install -m 0755 -d /etc/ssl) && ln -sv /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /etc/ssl/cert.pem; fi
+```
+
 # server.xml
 
 ```
